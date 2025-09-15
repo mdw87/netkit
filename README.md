@@ -90,4 +90,41 @@ rtt min/avg/max/mdev = 0.024/0.029/0.037/0.004 ms
 
 For good measure, let's start a server in the container and check that we can reach it from the host:
 ```
+# Install netcat
 sudo apt install -y netcat-openbsd
+# In one terminal, start up nc listening in the task_netns
+sudo ip netns exec task_netns nc -l -p 1
+2345
+# Open a second terminal, connect to the listening, server and send a message. It should appear in the nc terminal tab.
+nc 10.0.0.2 12345
+Hello!
+```
+
+## Adding a BPF Program to the Netkit device
+
+The performance benefit of Netkit comes from its ability to intercept packets from the container network namespace, and take actions such as redirecting or dropping the packet in a BPF program. This section will walk through creating a simple program that drops any packet with port 12345, and attaching it to the peer device (where it will run on packets leaving the network namespace).
+
+The contents of this simple BPF program have been provided in `netkit_sample.bpf.c`. This BPF program
+checks the port of the packet passing through the program, and drops it if the port is 12345.
+
+To compile the BPF program, some dependencies are needed. I have provided a dockerfile to make it easier
+to get everything set up. You may need to modify the dockerfile according to you environment. The provided
+file was tested on a Github Codespaces machine, which is a VM running in Azure.
+
+First, build and run the Docker image:
+```
+docker build -t netkit-dev .
+docker run --rm -it --cap-add=SYS_ADMIN --cap-add=SYS_RESOURCE --cap-add=NET_ADMIN -v "$PWD":/workspace -w /workspace netkit-dev
+```
+
+Once inside the container, build the BPF program using clang:
+```
+clang -g -O2 -c -target bpf -o netkit_example.o netkit_example.bpf.c
+```
+
+Building the BPF program will generate a .o file. This file can now be loaded into the kernel:
+```
+bpftool prog load netkit_example.o /sys/fs/bpf/netkit_example
+```
+
+Having loaded the program, it can now be attached to the netkit device:
