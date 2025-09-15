@@ -33,10 +33,13 @@ int netkit_peer_prog(struct __sk_buff *skb)
 
     // Check if destination port is 12345
     if (tcp.dest == __constant_htons(12345)) {
-        // Do something if needed, for now just allow
-        return TC_ACT_OK;
+        // Drop the packet
+        bpf_printk("Dropping packet to port 12345 from port %d", src_port);
+        return TC_ACT_SHOT;
     }
 
+    // Allow the packet
+    bpf_printk("Allowing packet to port %d from port %d", dst_port, src_port);
     return TC_ACT_OK;
 }
 

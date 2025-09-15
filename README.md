@@ -160,6 +160,11 @@ Hello!
 ^C
 ```
 
+Note, this command will detach the filter:
+```
+bpftool net detach dev nk0 tc
+```
+
 So there you have it! We have successfully demonstrated:
 - Creating an isolated network environment using Network Namespaces
 - Creating a connection to our isolated network using Netkit

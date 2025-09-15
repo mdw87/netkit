@@ -7,7 +7,7 @@ RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     clang llvm gcc make iproute2 iputils-ping git curl wget ca-certificates \
     linux-headers-6.8.0-1030-azure libbpf-dev \
-    netcat-openbsd \
+    netcat-openbsd jq\
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /usr/src/linux-headers-6.8.0-1030-azure/include/asm \
     # Note: this is needed for VMs in Azure for BPF to compile, adjust accordingly for other environments
