@@ -9,9 +9,9 @@ RUN apt-get update && \
     linux-headers-6.8.0-1030-azure libbpf-dev \
     netcat-openbsd jq\
     && rm -rf /var/lib/apt/lists/* \
-    && mkdir -p /usr/src/linux-headers-6.8.0-1030-azure/include/asm \
-    # Note: this is needed for VMs in Azure for BPF to compile, adjust accordingly for other environments
-    && ln -s /usr/include/x86_64-linux-gnu/asm/ /usr/include/asm
+    # Note: this symlink is needed for VMs in Azure for BPF to compile, adjust accordingly for other environments
+    && [ -e /usr/include/asm ] || ln -s /usr/include/x86_64-linux-gnu/asm/ /usr/include/asm
+
 
 # Clone bpftool repo and submodules, checkout v7.6.0, and build
 RUN git clone --recurse-submodules https://github.com/libbpf/bpftool.git /tmp/bpftool \

@@ -31,11 +31,15 @@ docker run --rm -it --cap-add=SYS_ADMIN --cap-add=SYS_RESOURCE --cap-add=NET_ADM
 
 Create a new network namespace
 
-`ip netns add task_netns`
+```
+ip netns add task_netns
+```
 
 Create the netkit device
 
-`ip link add task_nk type netkit`
+```
+ip link add task_nk type netkit
+```
 
 Note that two netkit devices (primary and peer) have been created in `ip -d link show` output
 
@@ -52,7 +56,9 @@ ip -d link show
 
 Move the peer end into the new network namespace
 
-`ip link set task_nk netns task_netns`
+```
+ip link set task_nk netns task_netns
+```
 
 Now note that when we run `ip -d link show` on the host netns, the peer is no longer visible. But it is there if we run the same command in the task_netns:
 
@@ -83,9 +89,6 @@ ip link set nk0 up
 Now, we should be able to ping our new network:
 
 ```bash
-# I had to install ping to my code-space, you may already have it
-apt-get update -y
-apt-get install -y iputils-ping
 ping -c 6 10.0.0.2
 PING 10.0.0.2 (10.0.0.2) 56(84) bytes of data.
 64 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.032 ms
@@ -143,7 +146,7 @@ nk0(3) tcx/ingress netkit_peer_prog prog_id 180
 
 Now, observe that when setting up a connection on port 12345, the message will be dropped:
 ```
-ip netns exec task_netns nc -l -p 12345 &
+ip netns exec task_netns nc -l 10.0.0.2 12345 &
 [1] 32
 root@a09fdbf1c5e0:/workspace# nc 10.0.0.2 12345
 Hello!
@@ -158,11 +161,6 @@ root@a09fdbf1c5e0:/workspace# nc 10.0.0.2 12346
 Hello!
 Hello!
 ^C
-```
-
-Note, this command will detach the filter:
-```
-bpftool net detach dev nk0 tc
 ```
 
 So there you have it! We have successfully demonstrated:
