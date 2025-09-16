@@ -12,7 +12,6 @@ ip link set task_nk netns task_netns
 # 4. Configure the task netkit device
 ip netns exec task_netns ip addr add 10.0.0.2/24 dev task_nk
 ip netns exec task_netns ip link set task_nk up
-
 # 5. Configure the host netkit device
 ip addr add 10.0.0.1/24 dev nk0
 ip link set nk0 up

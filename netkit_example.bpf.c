@@ -32,7 +32,7 @@ int netkit_peer_prog(struct __sk_buff *skb)
     unsigned int dst_port = bpf_ntohs(tcp.dest);
 
     // Check if destination port is 12345
-    if (tcp.dest == __constant_htons(12345)) {
+    if (src_port == 12345) {
         // Drop the packet
         bpf_printk("Dropping packet to port 12345 from port %d", src_port);
         return TC_ACT_SHOT;

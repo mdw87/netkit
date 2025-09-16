@@ -3,7 +3,7 @@ set -e
 
 # 1. Detach the filter from nk0
 echo "Detaching BPF filter from nk0..."
-bpftool net detach dev nk0 tc || true
+bpftool net detach dev tc nk0
 
 # 2. Remove the pinned BPF object
 echo "Removing pinned BPF object..."
@@ -24,6 +24,6 @@ echo "Program ID: $PROG_ID"
 
 # 6. Attach the program to nk0 (tc hook 214)
 echo "Attaching BPF program to nk0..."
-bpftool net attach tc id $PROG_ID dev nk0
+sudo bpftool net attach tc id $PROG_ID dev nk0
 
 echo "Done."

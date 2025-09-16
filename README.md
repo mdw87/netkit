@@ -169,3 +169,18 @@ So there you have it! We have successfully demonstrated:
 - Creating an isolated network environment using Network Namespaces
 - Creating a connection to our isolated network using Netkit
 - Adding a simple BPF program to filter network traffic 
+
+#### Note on debugging
+
+To see what is going on in the BPF program, it is helpful to use `bpf_printk`
+statements. To get these working:
+```
+# Mount the debugfs
+sudo mount -t debugfs none /sys/kernel/debug
+
+# Start echoing the debug statments
+sudo cat /sys/kernel/debug/tracing/trace_pipe
+```
+
+Now you will see the `bpf_printk` messages. In another terminal, test your
+network connection and you should see messages for "Allowing packet" and "Dropping packet"
